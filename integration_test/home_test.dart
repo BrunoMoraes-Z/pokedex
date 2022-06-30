@@ -45,6 +45,9 @@ void main() {
       await tester.enterText(find.byKey(pokefield), 'charmanderr');
       await tester.tap(find.text('Pokédex'));
       await tester.pump();
+      expect(find.byKey(loading), findsOneWidget);
+      await Future.delayed(const Duration(seconds: 3));
+      await tester.pump();
       expect(find.byKey(errorNotFound), findsOneWidget);
     });
 

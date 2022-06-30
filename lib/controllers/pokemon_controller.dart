@@ -8,6 +8,7 @@ class PokemonController extends ChangeNotifier {
   final PokemonRepository pokemonRepository;
   late String term = '';
   late bool _fetching = false;
+  final List<String> blockedTerms = [];
 
   PokemonController({
     required this.pokemonRepository,
@@ -67,7 +68,7 @@ class PokemonController extends ChangeNotifier {
     var list = pokemonRepository.pokemons
         .where((element) => element.name.toLowerCase().contains(term.trim()))
         .toList();
-    if (list.isEmpty) {
+    if (list.isEmpty && !blockedTerms.contains(term.toLowerCase())) {
       if (!_fetching) searchPokemon(term);
     }
     return list;
@@ -75,7 +76,10 @@ class PokemonController extends ChangeNotifier {
 
   searchPokemon(String pokemonName) async {
     _fetching = true;
-    await pokemonRepository.searchPokemon(pokemonName);
+    var pokemon = await pokemonRepository.searchPokemon(pokemonName);
+    if (pokemon.isNotEmpty && !blockedTerms.contains(pokemon)) {
+      blockedTerms.add(pokemon);
+    }
     _fetching = false;
     notifyListeners();
   }
@@ -83,6 +87,9 @@ class PokemonController extends ChangeNotifier {
   String onChange(String value) {
     term = value;
     notifyListeners();
+    if (term.isEmpty) {
+      blockedTerms.clear();
+    }
     return term;
   }
 }

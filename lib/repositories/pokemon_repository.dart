@@ -25,7 +25,7 @@ class PokemonRepository {
     return Future.value([]);
   }
 
-  Future<Pokemon?> searchPokemon(String pokemonName) async {
+  Future<String> searchPokemon(String pokemonName) async {
     final response = await http.get(
       Uri.parse('$baseApiUrl/pokemon/$pokemonName'),
     );
@@ -37,9 +37,9 @@ class PokemonRepository {
       });
       await pokemon.loadInfos();
       _pokemons.add(pokemon);
-      return pokemon;
+      return Future.value('');
     }
-    return Future.value(null);
+    return Future.value(pokemonName.toLowerCase());
   }
 
   Future<List<Pokemon>> fetchMorePokemons() async {
